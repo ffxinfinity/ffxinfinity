@@ -1,0 +1,61 @@
+-----------------------------------
+-- Area: North Gustaberg
+-- NPC: Monument
+-- Continues Quest: Hearts of Mythril
+-----------------------------------
+package.loaded["scripts/zones/North_Gustaberg/TextIDs"] = nil;
+-----------------------------------
+
+require("scripts/globals/quests");
+require("scripts/globals/settings");
+require("scripts/globals/keyitems");
+require("scripts/zones/North_Gustaberg/TextIDs");
+
+-----------------------------------
+-- onTrade Action
+-----------------------------------
+
+function onTrade(player,npc,trade)
+end; 
+
+-----------------------------------
+-- onTrigger Action
+-----------------------------------
+
+function onTrigger(player,npc)
+
+Hearts = player:getQuestStatus(BASTOK,HEARTS_OF_MYTHRIL);
+
+	if (Hearts == QUEST_ACCEPTED) then
+		player:startEvent(0x000b);
+	end
+
+end;
+
+-----------------------------------
+-- onEventUpdate
+-----------------------------------
+
+function onEventUpdate(player,csid,option)
+--printf("CSID: %u",csid);
+--printf("RESULT: %u",option);
+end;
+
+-----------------------------------
+-- onEventFinish
+-----------------------------------
+
+function onEventFinish(player,csid,option)
+--printf("CSID: %u",csid);
+--printf("RESULT: %u",option);
+
+	if (csid == 0x000b and option == 0) then
+		player:setVar("HeartsOfMythril",1);
+		player:delKeyItem(BOUQUETS_FOR_THE_PIONEERS);
+	end
+	
+end;
+
+
+
+

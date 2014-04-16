@@ -1,0 +1,103 @@
+﻿/*
+===========================================================================
+
+  Copyright (c) 2010-2012 Darkstar Dev Teams
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see http://www.gnu.org/licenses/
+
+  This file is part of DarkStar-server source code.
+
+===========================================================================
+*/
+
+#ifndef _CTREASUREPOOL_H
+#define _CTREASUREPOOL_H
+
+#include "../common/cbasetypes.h"
+
+#include <vector>
+
+enum TREASUREPOOLTYPE
+{
+	TREASUREPOOL_SOLO		= 1,
+	TREASUREPOOL_PARTY		= 6,
+	TREASUREPOOL_ALLIANCE	= 18,
+	TREASUREPOOL_ZONE		= 128
+};
+
+#define TREASUREPOOL_SIZE	10
+
+/************************************************************************
+*																		*
+*  Для совместимости с кластерной системой, персонаж получает новый		*
+*  TreasurePool при переходе между зонами								*
+*																		*
+************************************************************************/
+
+class CCharEntity;
+class CMobEntity;
+
+struct LotInfo
+{
+    uint16 lot;
+    CCharEntity* member;
+};
+
+struct TreasurePoolItem 
+{
+    uint16 ID;
+    uint8  SlotID;
+	uint32 TimeStamp;
+
+	std::vector<LotInfo> Lotters;
+};
+
+class CTreasurePool
+{
+public:
+
+	CTreasurePool(TREASUREPOOLTYPE PoolType);
+
+	TREASUREPOOLTYPE GetPoolType();
+
+	uint8 AddItem(uint16 ItemID, CMobEntity*);
+	uint8 AddItemFromChest(uint16 ItemID, CBaseEntity*);
+
+	void LotItem(uint8 SlotID, uint16 Lot);
+	void LotItem(CCharEntity* PChar, uint8 SlotID, uint16 Lot);
+	void AddMember(CCharEntity* PChar);
+	void DelMember(CCharEntity* PChar);
+	void UpdatePool(CCharEntity* PChar);
+
+	void CheckItems(uint32 tick);
+
+	void TreasureWon(CCharEntity* winner, uint8 SlotID);
+    void TreasureError(CCharEntity* winner, uint8 SlotID);
+	void TreasureLost(uint8 SlotID);
+
+private:
+
+	uint32 m_Tick;
+    uint8  m_count;
+
+	TREASUREPOOLTYPE m_TreasurePoolType;
+
+	void CheckTreasureItem(uint32 tick, uint8 SlotID);
+
+	TreasurePoolItem m_PoolItems[TREASUREPOOL_SIZE];
+
+	std::vector<CCharEntity*> members;
+};
+
+#endif
